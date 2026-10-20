@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f1020" />
+  <title>QuestLog — Gamify Your Life</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <div id="toast" class="toast"></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">Q</div><div><strong>QUESTLOG</strong><span>Life RPG</span></div></div>
+      <nav>
+        <button class="nav-item active" id="dashboardNav"><span>◈</span> Dashboard</button>
+        <button class="nav-item" id="seasonsNav"><span>◷</span> Past Seasons</button>
+        <button class="nav-item" id="rankingsNav"><span>♛</span> Rankings</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="mini-card"><span class="mini-icon">🔥</span><div><strong id="streakLabel">0 actions</strong><small>this week</small></div></div>
+        <button class="nav-item" id="settingsBtn"><span>⚙</span> Settings</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><p class="eyebrow">PLAYER DASHBOARD</p><h1 id="welcome">Ready for your next quest?</h1></div>
+        <button class="primary-btn" id="newHabitBtn"><span>＋</span> New habit</button>
+      </header>
+
+      <div id="dashboardView">
+      <section class="season-banner panel">
+        <div><p class="eyebrow">SEASON <span id="seasonYear">2026</span></p><h2>Season ends December 31 at 11:59 PM</h2><small>XP resets each January 1. Your habits stay, and past season results are saved.</small></div>
+        <div class="countdown-wrap"><span class="countdown-label">TIME REMAINING</span><strong id="seasonCountdown">--d --h --m --s</strong></div>
+      </section>
+      <section class="hero-grid">
+        <article class="rank-card panel">
+          <div class="rank-glow"></div>
+          <div class="rank-badge" id="rankBadge"><span>Ⅰ</span></div>
+          <div class="rank-copy"><p>CURRENT RANK</p><h2 id="rankName">Bronze I</h2><div class="xp-row"><span id="scoreText">0 XP</span><span id="nextText">100 XP to Bronze II</span></div><div class="progress"><div id="progressBar"></div></div></div>
+        </article>
+        <article class="stat-card panel"><span class="stat-icon positive">↗</span><div><p>TOTAL SCORE</p><h3 id="scoreBig">0</h3><small>Current season XP</small></div></article>
+        <article class="stat-card panel"><span class="stat-icon">⚡</span><div><p>ACTIONS</p><h3 id="actionCount">0</h3><small>Logged quests</small></div></article>
+      </section>
+
+      <section class="content-grid">
+        <div>
+          <div class="section-heading"><div><p class="eyebrow">DAILY QUESTS</p><h2>Your habits</h2></div><div class="filter-tabs"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="positive">Gain</button><button class="filter" data-filter="negative">Penalty</button></div></div>
+          <div id="habitGrid" class="habit-grid"></div>
+        </div>
+        <aside>
+          <div class="section-heading compact"><div><p class="eyebrow">QUEST LOG</p><h2>Recent activity</h2></div></div>
+          <div class="activity panel" id="activityList"></div>
+        </aside>
+      </section>
+      </div>
+      <section id="seasonsView" hidden aria-label="Past seasons">
+        <div class="section-heading history-heading"><div><p class="eyebrow">HALL OF FAME</p><h2>Past Seasons</h2><p class="history-description">Your completed seasons, final ranks, and activity history.</p></div></div>
+        <div id="seasonCards" class="season-cards"></div>
+        <div id="seasonDetail" class="season-detail"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="habitModal" class="modal">
+    <form method="dialog" id="habitForm">
+      <div class="modal-head"><div><p class="eyebrow">CREATE QUEST</p><h2 id="habitModalTitle">New habit</h2></div><button class="icon-btn" value="cancel">×</button></div>
+      <input type="hidden" id="habitId" />
+      <label>Habit name<input id="habitName" maxlength="80" placeholder="e.g. Workout" required /></label>
+      <div class="form-row"><label>Points<input id="habitPoints" type="number" placeholder="50 or -100" required /></label><label>Icon<input id="habitIcon" maxlength="4" value="⚡" /></label></div>
+      <label>Category<input id="habitCategory" maxlength="40" placeholder="Health, School, Career..." /></label>
+      <p class="form-hint">Use positive points for rewards and negative points for penalties.</p>
+      <button type="submit" class="primary-btn wide">Save habit</button>
+    </form>
+  </dialog>
+
+  <dialog id="settingsModal" class="modal">
+    <form method="dialog" id="settingsForm">
+      <div class="modal-head"><div><p class="eyebrow">PROFILE</p><h2>Settings</h2></div><button class="icon-btn" value="cancel">×</button></div>
+      <label>Player name<input id="playerName" maxlength="40" /></label>
+      <label>Starting score<input id="baseScore" type="number" /><span class="label-note">Useful for importing your existing Google Sheet score.</span></label>
+      <button type="submit" class="primary-btn wide">Save settings</button>
+      <div class="reset-area"><h3>Season controls</h3><p>Start a new season now, or wait for the automatic New Year reset. Your habits will remain.</p><button type="button" class="danger-btn" id="resetSeasonBtn">Reset season XP now</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="rankModal" class="modal rank-modal">
+    <form method="dialog"><div class="modal-head"><div><p class="eyebrow">RANK LADDER</p><h2>Climb the ranks</h2></div><button class="icon-btn" value="cancel">×</button></div><div id="rankList" class="rank-list"></div><div class="archive-area"><h3>Past seasons</h3><div id="archiveList"></div></div></form>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>
